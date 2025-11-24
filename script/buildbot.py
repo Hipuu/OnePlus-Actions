@@ -103,7 +103,7 @@ def get_kernel_versions():
     return f"{version}.{patchlevel}.{sublevel}"
 
 def get_kernel_commitmsg():
-    kermsg=os.popen("echo $(git log --pretty=format:"%s" -1)").read().strip()
+    kermsg=os.popen('echo $(git log --pretty=format:"%s" -1)').read().strip()
     return kermsg
     
 
