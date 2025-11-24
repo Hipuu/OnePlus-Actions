@@ -128,7 +128,7 @@ def check_lz4_zstd():
         return "On"
     else:
         return "Off"
-    return "Off
+    return "Off"
 
 async def main():
     print("[+] Uploading to telegram")
