@@ -15,18 +15,23 @@ KPM= os.environ.get("KPM")
 lz4kd= os.environ.get("LZ4KD")
 BBR= os.environ.get("BBR")
 KSU_VAR = os.environ.get("KSU_VAR")
+BBG= os.environ.get("BBG")
+PROXY= os.environ.get("PROXY")
 
 MSG_TEMPLATE = """
 **New Build Published!**
 #oki
 #{device}
 ```Kernel Info
-kernelver: {kernelversion}
+KernelVer: {kernelversion}
+KernelMsg: {kernel_msg}
 KSU_VAR: {KSU_VAR}
 KsuVersion: {Ksuver}
 KPM: {kpm}
 Lz4kd: {lz4kd} Lz4&zstd: {lz4_zstd}
 BBR: {BBR}
+BBG: {BBG}
+PROXY: {PROXY}
 ```
 十分感谢yc佬对本自动推送bot做出的贡献❤️
 Please Join Our Group! tg @gki_kernels_xiaoxiaow
@@ -43,6 +48,9 @@ def get_caption():
         KSU_VAR=KSU_VAR,
         lz4_zstd=check_lz4_zstd(),
         BBR=BBR,
+        BBG=BBG,
+        PROXY=PROXY,
+        kernel_msg=kernel_msg,
     )
     if len(msg) > 1024:
         return f"{DEVICE}{kernelversion}"
@@ -94,8 +102,13 @@ def get_kernel_versions():
         raise
     return f"{version}.{patchlevel}.{sublevel}"
 
+def get_kernel_commitmsg():
+    kermsg=os.popen("echo $(git log --pretty=format:"%s" -1)").read().strip()
+    return kermsg
+    
+
 def get_versions():
-    global kernelversion,ksuver,KSU_VAR
+    global kernelversion,ksuver,KSU_VAR,kernel_msg
     if KSU_VAR == "NEXT":
         ksu_folder="KernelSU-Next"
     else:
@@ -103,6 +116,7 @@ def get_versions():
     current_work=os.getcwd()
     os.chdir(current_work+"/kernel_workspace/kernel_platform/common") #除非next
     kernelversion=get_kernel_versions()
+    kernel_msg=get_kernel_commitmsg()
     os.chdir(os.getcwd()+f"/../{ksu_folder}")
     ksuver=os.popen("echo $(git describe --tags $(git rev-list --tags --max-count=1))-$(git rev-parse --short HEAD)@$(git branch --show-current)").read().strip()
     ksuver+=f' ({os.environ.get("KSUVER")})'
@@ -114,7 +128,7 @@ def check_lz4_zstd():
         return "On"
     else:
         return "Off"
-    return "Off"
+    return "Off
 
 async def main():
     print("[+] Uploading to telegram")
